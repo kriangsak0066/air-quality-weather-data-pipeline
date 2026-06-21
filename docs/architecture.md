@@ -5,13 +5,13 @@
 This project follows a layered analytics pipeline pattern. Each layer has a specific responsibility, from preserving raw API responses to producing dashboard-ready tables.
 
 ```text
-OpenAQ API
+OpenAQ API + Open-Meteo API
   -> data/raw
   -> data/processed
-  -> stg.latest_pm25
-  -> dw.pm25_measurements
-  -> dq.pm25_quality_summary
-  -> mart.pm25_latest_dashboard
+  -> stg.latest_pm25 + stg.weather_hourly
+  -> dw.pm25_measurements + dw.weather_hourly
+  -> dq.pm25_quality_summary + dq.pipeline_quality_summary
+  -> mart.pm25_latest_dashboard + mart.pm25_weather_dashboard
   -> Power BI
 ```
 
@@ -46,4 +46,4 @@ The data quality summary is stored in its own `dq` schema. The dashboard mart fo
 
 ## Current Limitation
 
-The current version ingests PM2.5 latest measurements only. Location metadata and weather variables will be added in later iterations.
+The current weather ingestion uses a fixed Bangkok coordinate as a technical demo. Future iterations should fetch weather dynamically for PM2.5 sensor locations and support historical trends.

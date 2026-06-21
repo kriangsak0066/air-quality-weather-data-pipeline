@@ -4,18 +4,18 @@
 
 The dashboard will help analysts monitor PM2.5 levels, identify stale measurements, and understand data quality risks before using air quality metrics for decision-making.
 
-## Data Source
-
-Primary mart table:
+Primary mart tables:
 
 ```text
 mart.pm25_latest_dashboard
+mart.pm25_weather_dashboard
 ```
 
-Data quality table:
+Data quality tables:
 
 ```text
 dq.pm25_quality_summary
+dq.pipeline_quality_summary
 ```
 
 ## Page 1: Executive Overview
@@ -51,6 +51,7 @@ Suggested visuals:
 - Bar chart: top sensors by PM2.5 value
 - Filter: freshness status
 - Filter: data quality status
+- Scatter plot: PM2.5 value vs temperature or humidity
 
 ## Page 3: Data Quality
 
@@ -60,9 +61,11 @@ Main questions:
 - How many values are invalid?
 - Are coordinates valid?
 - Which records should be reviewed before analysis?
+- What percentage of PM2.5 records matched weather data?
 
 Suggested visuals:
-
+- KPI card: weather match rate
+- KPI card: combined pass rate
 - KPI card: stale measurement rows
 - KPI card: invalid PM2.5 value rows
 - KPI card: valid coordinate rate

@@ -4,24 +4,25 @@ A data engineering portfolio project that ingests PM2.5 air quality data from th
 
 ## Project Objective
 
-This project demonstrates an end-to-end analytics pipeline for air quality monitoring. The goal is to help analysts understand PM2.5 levels, data freshness, measurement quality, and dashboard-ready air quality categories.
+This project demonstrates an end-to-end analytics pipeline for air quality and weather monitoring. The goal is to help analysts understand PM2.5 levels, weather context, data freshness, measurement quality, and dashboard-ready environmental indicators.
 
 ## Architecture
 
 ```text
-OpenAQ API
+OpenAQ API + Open-Meteo API
   -> Raw JSON files
   -> Processed CSV files
-  -> DuckDB staging table
-  -> Cleaned warehouse table
-  -> Data quality summary
-  -> Dashboard mart
+  -> DuckDB staging tables
+  -> Cleaned warehouse tables
+  -> Data quality summaries
+  -> Dashboard marts
 ```
 
 ## Tech Stack
 
 - Python
 - OpenAQ API
+- Open-Meteo API
 - pandas
 - DuckDB
 - SQL
@@ -32,12 +33,12 @@ OpenAQ API
 
 | Layer | Object | Purpose |
 |---|---|---|
-| Raw | `data/raw/*.json` | Store original API response |
-| Processed | `data/processed/*.csv` | Flatten API response into tabular format |
-| Staging | `stg.latest_pm25` | Preserve source-like data in DuckDB |
-| Warehouse | `dw.pm25_measurements` | Parse types and add quality flags |
-| Data Quality | `dq.pm25_quality_summary` | Summarize data quality checks |
-| Mart | `mart.pm25_latest_dashboard` | Dashboard-ready PM2.5 table |
+| Raw | `data/raw/*.json` | Store original API responses |
+| Processed | `data/processed/*.csv` | Flatten API responses into tabular files |
+| Staging | `stg.latest_pm25`, `stg.weather_hourly` | Preserve source-like data in DuckDB |
+| Warehouse | `dw.pm25_measurements`, `dw.weather_hourly` | Parse types and add quality flags |
+| Data Quality | `dq.pm25_quality_summary`, `dq.pipeline_quality_summary` | Summarize source and pipeline quality checks |
+| Mart | `mart.pm25_latest_dashboard`, `mart.pm25_weather_dashboard` | Dashboard-ready PM2.5 and weather tables |
 
 ## Key Data Quality Checks
 
@@ -47,23 +48,22 @@ OpenAQ API
 - Longitude must be between -180 and 180
 - Sensor ID and location ID should not be missing
 
-## Current Data Quality Findings
+## Current Pipeline Quality Findings
 
 Based on the latest ingestion run:
 
 | Metric | Result |
 |---|---:|
-| Total rows | 100 |
-| Valid PM2.5 value rows | 96 |
-| Invalid PM2.5 value rows | 4 |
-| Recent measurement rows | 45 |
-| Stale measurement rows | 55 |
-| Valid coordinate rows | 100 |
+| PM2.5 total rows | 100 |
 | Valid PM2.5 value rate | 96% |
-| Recent measurement rate | 45% |
-| Valid coordinate rate | 100% |
+| Recent PM2.5 rate | 45% |
+| Weather hourly rows | 24 |
+| Weather quality rate | 100% |
+| Weather match rate | 44% |
+| Combined pass rate | 43% |
+| Combined review rate | 57% |
 
-## Dashboard Mart
+## Dashboard Marts
 
 The table `mart.pm25_latest_dashboard` includes:
 
@@ -74,6 +74,15 @@ The table `mart.pm25_latest_dashboard` includes:
 - Data quality status
 - Sensor and location IDs
 - Latitude and longitude
+
+The table `mart.pm25_weather_dashboard` adds:
+
+- Weather hourly match status
+- Temperature
+- Relative humidity
+- Precipitation
+- Wind speed
+- Combined PM2.5 and weather quality status
 
 ## How to Run
 
@@ -97,15 +106,21 @@ Run the pipeline:
 ```powershell
 python src\ingest_latest_pm25.py
 python src\load_pm25_to_duckdb.py
+python src\ingest_openmeteo_weather.py
+python src\load_weather_to_duckdb.py
 python src\run_sql_file.py sql\01_create_dw_pm25_measurements.sql
 python src\run_sql_file.py sql\02_create_dq_pm25_summary.sql
 python src\run_sql_file.py sql\03_create_mart_pm25_latest_dashboard.sql
+python src\run_sql_file.py sql\04_create_dw_weather_hourly.sql
+python src\run_sql_file.py sql\05_create_mart_pm25_weather_dashboard.sql
+python src\run_sql_file.py sql\06_create_dq_pipeline_summary.sql
 ```
 
 ## Next Steps
 
-- Add Open-Meteo weather data
-- Join PM2.5 measurements with weather variables
+- Fetch weather data dynamically for PM2.5 sensor locations
+- Add location names and country metadata
+- Add historical PM2.5 and weather trends
 - Build Power BI dashboard pages
 - Add automated data quality tests
 - Add orchestration with Airflow
