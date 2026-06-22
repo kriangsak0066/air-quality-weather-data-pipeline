@@ -84,6 +84,25 @@ The table `mart.pm25_weather_dashboard` adds:
 - Wind speed
 - Combined PM2.5 and weather quality status
 
+## Dashboard Preview
+
+### Executive Overview
+
+![Executive Overview](dashboards/images/01-executive-overview.jpg)
+
+### Air Quality Monitoring
+
+![Air Quality Monitoring](dashboards/images/02-air-quality-monitoring.jpg)
+
+### Data Quality
+
+![Data Quality](dashboards/images/03-data-quality.jpg)
+
+The Power BI report file is available at:
+
+```text
+dashboards/air-quality-weather-dashboard.pbix
+
 ## How to Run
 
 Create and activate a virtual environment:
